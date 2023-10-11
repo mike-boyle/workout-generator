@@ -8,7 +8,7 @@ import shutil
 # Function to read column names from existing CSV file
 def read_existing_columns(filepath):
     try:
-        with open(filepath, 'r') as f:
+        with open(filepath, "r") as f:
             reader = csv.reader(f)
             return next(reader)
     except FileNotFoundError:
@@ -16,6 +16,7 @@ def read_existing_columns(filepath):
     except Exception as e:
         print(f"An error occurred while reading the file: {e}")
         return None
+
 
 # Function to fetch HTML from a URL
 def fetch_html(url):
@@ -27,23 +28,25 @@ def fetch_html(url):
         print(f"An error occurred while fetching HTML: {e}")
         return None
 
+
 # Function to parse HTML and generate CSV data
 def parse_html_to_csv(html):
     try:
-        soup = BeautifulSoup(html, 'html.parser')
+        soup = BeautifulSoup(html, "html.parser")
         table = soup.find(id="powerClassTable")
 
-        rows = table.find_all('tr')
-        headers = [header.text for header in rows[0].find_all('th')]
-        
+        rows = table.find_all("tr")
+        headers = [header.text for header in rows[0].find_all("th")]
+
         data = []
         for row in rows[1:]:
-            data.append([cell.text for cell in row.find_all('td')])
-        
+            data.append([cell.text for cell in row.find_all("td")])
+
         return headers, data
     except Exception as e:
         print(f"An error occurred while parsing HTML: {e}")
         return None, None
+
 
 # Function to compare columns and print warnings
 def compare_columns(existing_columns, new_columns):
@@ -51,12 +54,13 @@ def compare_columns(existing_columns, new_columns):
         if column not in new_columns:
             print(f"Warning: Column {column} does not exist in the new HTML.")
 
+
 # Main function
 def main():
     # Step 1
     print("Reading existing columns...")
-    existing_columns = read_existing_columns('./powerzone.csv')
-    
+    existing_columns = read_existing_columns("./powerzone.csv")
+
     # Step 2
     print("Fetching HTML...")
     html = fetch_html("https://app.homefitnessbuddy.com/peloton/powerzone/")
@@ -77,16 +81,17 @@ def main():
         compare_columns(existing_columns, new_columns)
 
     # Step 6
-# Copy existing CSV to backup
-    shutil.copy('./powerzone.csv', './powerzone.bk.csv')
+    # Copy existing CSV to backup
+    shutil.copy("./powerzone.csv", "./powerzone.bk.csv")
     print("Writing to CSV...")
     try:
-        with open('./powerzone.csv', 'w', newline='', encoding='utf-8') as f:
+        with open("./powerzone.csv", "w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
             writer.writerow(new_columns)
             writer.writerows(data)
     except Exception as e:
         print(f"An error occurred while writing to CSV: {e}")
+
 
 if __name__ == "__main__":
     main()
